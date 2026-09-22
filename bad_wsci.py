@@ -3,14 +3,11 @@
 from pathlib import Path
 from ollama import chat
 
-
 question = """
 I changed my university password this morning.
 Now my Windows laptop won't connect to campus Wi-Fi,
 but my phone still works.
 """
-
-
 context = ""
 
 for file in Path("knowledge").glob("*.txt"):
@@ -18,8 +15,22 @@ for file in Path("knowledge").glob("*.txt"):
     context += "\n\n"
 
 ## Make a call to Qwen with student's question and the context from the knowledge base.
-
-
+response = chat(
+    model="qwen3:8b",
+    messages=[
+        {
+            "role": "system",
+            "content": (
+                "You are a university IT helpdesk assistant. "
+                "Use the provided knowledge base context to answer the student's question."
+            ),
+        },
+        {
+            "role": "user",
+            "content": f"Knowledge base:\n{context}\n\nStudent question:\n{question}",
+        },
+    ],
+)
 
 ## Just for fun, print the total length of the context
 print(
@@ -28,3 +39,7 @@ print(
 )
 
 ## Print the response from Qwen
+print(response.message.content)
+
+
+
